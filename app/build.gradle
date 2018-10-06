@@ -42,4 +42,5 @@ dependencies {
     annotationProcessor "android.arch.persistence.room:compiler:$room_version"
     // use kapt for Kotlin
     annotationProcessor "android.arch.lifecycle:compiler:$lifecycle_version"
+    implementation 'com.google.firebase:firebase-messaging:17.3.3'
 }

@@ -35,7 +35,6 @@ public class TaskListViewModel extends AndroidViewModel {
     public TaskListViewModel(@NonNull Application application) {
         super(application);
         taskDao = TasksDatabase.getInstance(application).taskDao();
-        taskDao.deleteAll();
         executorService = Executors.newSingleThreadExecutor();
         db.collection("tasks").
                 addSnapshotListener(new EventListener<QuerySnapshot>() {
