@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -19,7 +20,6 @@ public class TaskFragment extends Fragment {
 
     private int mColumnCount = 1;
     private View.OnClickListener onItemClickListener;
-    private View.OnClickListener onAddClickListener;
     private TaskRecyclerViewAdapter viewAdapter;
     private TaskListViewModel viewModel;
     private View view;
@@ -72,13 +72,10 @@ public class TaskFragment extends Fragment {
     }
 
     private void createListeners() {
-        onItemClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                TaskRecyclerViewAdapter.ViewHolder viewHolder = (TaskRecyclerViewAdapter.ViewHolder) view.getTag();
-                if (viewHolder.task != null) {
-                    viewModel.toggleTask(viewHolder.task);
-                }
+        onItemClickListener = view -> {
+            TaskRecyclerViewAdapter.ViewHolder viewHolder = (TaskRecyclerViewAdapter.ViewHolder) view.getTag();
+            if (viewHolder.task != null) {
+                viewModel.toggleTask(viewHolder.task);
             }
         };
     }
@@ -99,7 +96,7 @@ public class TaskFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_task_list, container, false);
 
         Context context = view.getContext();
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
+        RecyclerView recyclerView = view.findViewById(R.id.list);
         if (mColumnCount <= 1) {
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
         } else {
@@ -108,7 +105,27 @@ public class TaskFragment extends Fragment {
         viewAdapter = new TaskRecyclerViewAdapter(getContext(), onItemClickListener);
         recyclerView.setAdapter(viewAdapter);
 
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
 
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                // Row is swiped from recycler view
+                // remove it from adapter
+                TaskRecyclerViewAdapter.ViewHolder vH = (TaskRecyclerViewAdapter.ViewHolder) viewHolder;
+                viewModel.deleteTask(vH.task);
+            }
+
+//            @Override
+//            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+//                // view the background view
+//            }
+        };
+
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
         initialiseViews();
 
         return view;

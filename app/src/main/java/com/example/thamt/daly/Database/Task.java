@@ -4,6 +4,7 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 @Entity
 public class Task {
@@ -11,15 +12,24 @@ public class Task {
     public String description;
     @ColumnInfo(name = "status")
     public boolean status;
-    @PrimaryKey(autoGenerate = true)
-    private int id;
+    @PrimaryKey
+    @NonNull
+    private String id;
 
     public Task() {
     }
 
     @Ignore
-    public Task(String description) {
+    public Task(String id, String description) {
+        this.id = id;
+        this.description = description;
         this.status = false;
+    }
+
+    @Ignore
+    public Task(String id, String description, boolean status) {
+        this.id = id;
+        this.status = status;
         this.description = description;
     }
 
@@ -29,11 +39,11 @@ public class Task {
         return this.status;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
