@@ -87,6 +87,7 @@ public class TaskFragment extends Fragment {
         // Update the list when the data changes
         viewModel.getTasks().observe(this, tasks -> {
             if (tasks != null) {
+                tasks.sort((o1, o2) -> o1.getStatus() ? 1 : o2.getStatus() ? -1 : 0);
                 viewAdapter.setData(tasks);
             }
         });
