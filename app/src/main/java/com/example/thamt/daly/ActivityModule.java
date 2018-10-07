@@ -18,7 +18,6 @@ public class ActivityModule {
         this.context = context;
     }
 
-    @DalyApplicationScope
     @Provides
     @Named("activity_context")
     public Context context() {
