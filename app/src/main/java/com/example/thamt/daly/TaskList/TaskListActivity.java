@@ -1,4 +1,4 @@
-package com.example.thamt.daly;
+package com.example.thamt.daly.TaskList;
 
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
+import com.example.thamt.daly.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 

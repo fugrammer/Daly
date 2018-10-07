@@ -1,4 +1,4 @@
-package com.example.thamt.daly;
+package com.example.thamt.daly.TaskList;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.example.thamt.daly.DaggerTaskListViewModelComponent;
 import com.example.thamt.daly.Database.Task;
 import com.example.thamt.daly.Database.TaskDao;
 import com.example.thamt.daly.Database.TaskFirestoreDao;
@@ -31,11 +32,14 @@ public class TaskListViewModel extends AndroidViewModel {
     private TaskDao taskDao;
     private ExecutorService executorService;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private UUIDGenerator uuidGenerator;
 
     public TaskListViewModel(@NonNull Application application) {
         super(application);
         taskDao = TasksDatabase.getInstance(application).taskDao();
         executorService = Executors.newSingleThreadExecutor();
+        TaskListViewModelComponent component = DaggerTaskListViewModelComponent.create();
+        uuidGenerator = component.getUUIDGenerator();
         db.collection("tasks").
                 addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -64,7 +68,7 @@ public class TaskListViewModel extends AndroidViewModel {
     }
 
     public void createTask(String description) {
-        Task task = new Task(UUIDGenerator.generateUUID(), description);
+        Task task = new Task(uuidGenerator.generateUUID(), description);
         saveTask(task);
     }
 
@@ -82,5 +86,4 @@ public class TaskListViewModel extends AndroidViewModel {
         task.toggleTask();
         saveTask(task);
     }
-
 }

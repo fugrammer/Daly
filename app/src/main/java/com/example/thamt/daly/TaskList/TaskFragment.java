@@ -1,4 +1,4 @@
-package com.example.thamt.daly;
+package com.example.thamt.daly.TaskList;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.example.thamt.daly.R;
 
 public class TaskFragment extends Fragment {
 

@@ -1,4 +1,4 @@
-package com.example.thamt.daly;
+package com.example.thamt.daly.TaskList;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -10,6 +10,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.example.thamt.daly.Database.Task;
+import com.example.thamt.daly.R;
 
 import java.util.ArrayList;
 import java.util.List;

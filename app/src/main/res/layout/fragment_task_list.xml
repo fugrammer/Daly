@@ -35,7 +35,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:context=".TaskFragment"
+        tools:context=".TaskList.TaskFragment"
         tools:listitem="@layout/fragment_task">
 
     </android.support.v7.widget.RecyclerView>
