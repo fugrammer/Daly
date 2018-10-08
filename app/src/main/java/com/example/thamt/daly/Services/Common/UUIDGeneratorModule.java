@@ -1,8 +1,8 @@
-package com.example.thamt.daly.Services;
+package com.example.thamt.daly.Services.Common;
 
 import android.support.annotation.NonNull;
 
-import javax.inject.Singleton;
+import com.example.thamt.daly.DalyApplicationScope;
 
 import dagger.Module;
 import dagger.Provides;
@@ -11,7 +11,7 @@ import dagger.Provides;
 public class UUIDGeneratorModule {
     @Provides
     @NonNull
-    @Singleton
+    @DalyApplicationScope
     public UUIDGenerator provideUUIDGenerator() {
         return new UUIDGenerator();
     }

@@ -1,12 +1,12 @@
 <resources>
-    <string name="app_name">Daly</string>
-    <string name="title_home">Task List</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
-    <string name="TASK_FRAGMENT_LABEL">TASK_FRAGMENT</string>
-    <string name="TASKS_DB_NAME">Tasks.db</string>
-    <string name="CREATE_TASK_HINT">Enter task</string>
-    <string name="ADD_TASK_LABEL">Add</string>
+  <string name="app_name">Daly</string>
+  <string name="title_liling">Li Ling</string>
+  <string name="title_shared">Shared</string>
+  <string name="title_thomas">Thomas</string>
+  <string name="TASK_FRAGMENT_LABEL">TASK_FRAGMENT</string>
+  <string name="TASKS_DB_NAME">Tasks.db</string>
+  <string name="CREATE_TASK_HINT">Enter task</string>
+  <string name="ADD_TASK_LABEL">Add</string>
   <string name="user_token">USER_TOKEN</string>
   <string name="user_id">USER_ID</string>
 </resources>

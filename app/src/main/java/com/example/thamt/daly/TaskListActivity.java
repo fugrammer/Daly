@@ -34,13 +34,19 @@ public class TaskListActivity extends AppCompatActivity {
 
   private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
     = item -> {
+    Bundle bundle = new Bundle();
     switch (item.getItemId()) {
-      case R.id.navigation_home:
-        loadTaskFragment(false);
+      case R.id.navigation_liling:
+        bundle.putString("checklistName", "liling");
+        loadTaskFragment(false, bundle);
         return true;
-      case R.id.navigation_dashboard:
+      case R.id.navigation_shared:
+        bundle.putString("checklistName", "shared");
+        loadTaskFragment(false, bundle);
         return true;
-      case R.id.navigation_notifications:
+      case R.id.navigation_thomas:
+        bundle.putString("checklistName", "thomas");
+        loadTaskFragment(false, bundle);
         return true;
     }
     return false;
@@ -65,14 +71,18 @@ public class TaskListActivity extends AppCompatActivity {
 
     auth = FirebaseAuth.getInstance();
 
-    loadTaskFragment(true);
+    Bundle bundle = new Bundle();
+    bundle.putString("checklistName", "shared");
+    loadTaskFragment(true, bundle);
   }
 
-  private void loadTaskFragment(boolean initialLoad) {
+  private void loadTaskFragment(boolean initialLoad, Bundle bundle) {
     FragmentManager fragmentManager = getSupportFragmentManager();
     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
     Fragment fragment = new TaskFragment();
+    fragment.setArguments(bundle);
+
     fragmentTransaction.replace(R.id.fragment_container, fragment, getString(R.string.TASK_FRAGMENT_LABEL));
     if (!initialLoad) {
       fragmentTransaction.addToBackStack(null);

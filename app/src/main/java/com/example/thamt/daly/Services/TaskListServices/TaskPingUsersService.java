@@ -1,4 +1,4 @@
-package com.example.thamt.daly.TaskList;
+package com.example.thamt.daly.Services.TaskListServices;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.thamt.daly.R;
+import com.example.thamt.daly.TaskList.TaskListViewModel;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -15,18 +16,15 @@ import com.google.firebase.functions.HttpsCallableResult;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TaskPingUsersService {
+public class TaskPingUsersService implements PingUsersServiceInterface {
   private static final String TAG = "TaskPingUsersService";
   private FirebaseFunctions functions;
-  private TaskListViewModel viewModel;
   private Context context;
 
   // TODO: Use DI.
   public TaskPingUsersService(
-    TaskListViewModel viewModel,
     Context context) {
     functions = FirebaseFunctions.getInstance();
-    this.viewModel = viewModel;
     this.context = context;
   }
 

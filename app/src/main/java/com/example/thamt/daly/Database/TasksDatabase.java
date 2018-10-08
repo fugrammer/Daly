@@ -7,7 +7,7 @@ import android.content.Context;
 
 import com.example.thamt.daly.R;
 
-@Database(entities = {Task.class}, version = 2)
+@Database(entities = {Task.class}, version = 3)
 public abstract class TasksDatabase extends RoomDatabase {
     private static final Object sLock = new Object();
 

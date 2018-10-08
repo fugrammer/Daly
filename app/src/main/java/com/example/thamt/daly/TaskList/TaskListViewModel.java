@@ -7,7 +7,6 @@ import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -15,7 +14,8 @@ import com.example.thamt.daly.Database.Task;
 import com.example.thamt.daly.Database.TaskDao;
 import com.example.thamt.daly.Database.TaskFirestoreDao;
 import com.example.thamt.daly.Database.TasksDatabase;
-import com.example.thamt.daly.Services.UUIDGenerator;
+import com.example.thamt.daly.Services.TaskListServices.TaskPingUsersService;
+import com.example.thamt.daly.Services.Common.UUIDGenerator;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -24,66 +24,68 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.functions.FirebaseFunctionsException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class TaskListViewModel extends AndroidViewModel {
-    private static final String TAG = "TaskListViewModel";
+  private static final String TAG = "TaskListViewModel";
 
-    private MutableLiveData<List<Task>> tasks;
-    private TaskDao taskDao;
-    private ExecutorService executorService;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private UUIDGenerator uuidGenerator;
+  private MutableLiveData<List<Task>> tasks;
+  private TaskDao taskDao;
+  private ExecutorService executorService;
+  private FirebaseFirestore db = FirebaseFirestore.getInstance();
+  private UUIDGenerator uuidGenerator;
   private TaskPingUsersService pingUsersService;
   private Context context;
 
-    public TaskListViewModel(@NonNull Application application) {
-        super(application);
-      context = application;
-        taskDao = TasksDatabase.getInstance(application).taskDao();
-        executorService = Executors.newSingleThreadExecutor();
-        TaskListViewModelComponent component = DaggerTaskListViewModelComponent.create();
-        uuidGenerator = component.getUUIDGenerator();
-      pingUsersService = new TaskPingUsersService(this, application.getApplicationContext());
-        db.collection("tasks").
-                addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value,
-                                        @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            return;
-                        }
-                      taskDao.deleteAll();
-                        for (QueryDocumentSnapshot doc : value) {
-                            try {
-                                String description = doc.getString("description");
-                                boolean status = doc.getBoolean("status");
-                                String id = doc.getString("id");
-                                taskDao.save(new Task(id, description, status));
-                                Log.i(TAG, "Task id:" + String.valueOf(id) + " Task description:" + description);
-                            } catch (Exception exception) {
-                            }
-                        }
-                    }
-                });
-    }
+  public TaskListViewModel(
+    Application application,
+    UUIDGenerator uuidGenerator,
+    TaskPingUsersService pingUsersService) {
+    super(application);
+    context = application;
+    taskDao = TasksDatabase.getInstance(application).taskDao();
+    executorService = Executors.newSingleThreadExecutor();
+    this.uuidGenerator = uuidGenerator;
+    this.pingUsersService = pingUsersService;
 
-    public LiveData<List<Task>> getTasks() {
-        return taskDao.findAll();
-    }
+    db.collection("tasks").
+      addSnapshotListener(new EventListener<QuerySnapshot>() {
+        @Override
+        public void onEvent(@Nullable QuerySnapshot value,
+                            @Nullable FirebaseFirestoreException e) {
+          if (e != null) {
+            return;
+          }
+          taskDao.deleteAll();
+          for (QueryDocumentSnapshot doc : value) {
+            try {
+              String checklistName = doc.getString("checklistName");
+              String description = doc.getString("description");
+              String id = doc.getString("id");
+              boolean status = doc.getBoolean("status");
+              taskDao.save(new Task(checklistName, id, description, status));
+            } catch (Exception exception) {
+            }
+          }
+        }
+      });
+  }
 
-    public void createTask(String description) {
-        Task task = new Task(uuidGenerator.generateUUID(), description);
-        saveTask(task);
-    }
+  public LiveData<List<Task>> getTasks() {
+    return taskDao.findAll();
+  }
 
-    public void saveTask(Task task) {
-        TaskFirestoreDao.setTask(task);
-        //executorService.execute(() -> taskDao.save(task));
-    }
+  public void createTask(String checklistName, String description) {
+    Task task = new Task(checklistName, uuidGenerator.generateUUID(), description, false);
+    saveTask(task);
+  }
+
+  public void saveTask(Task task) {
+    TaskFirestoreDao.setTask(task);
+    //executorService.execute(() -> taskDao.save(task));
+  }
 
   // TODO: Update all devices.
   public void deleteTask(Task task) {
@@ -118,8 +120,8 @@ public class TaskListViewModel extends AndroidViewModel {
     });
   }
 
-    public void toggleTask(Task task) {
-        task.toggleTask();
-        saveTask(task);
-    }
+  public void toggleTask(Task task) {
+    task.toggleTask();
+    saveTask(task);
+  }
 }

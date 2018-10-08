@@ -18,17 +18,29 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.thamt.daly.Database.Task;
 import com.example.thamt.daly.R;
+import com.example.thamt.daly.Services.Common.UUIDGeneratorModule;
+import com.example.thamt.daly.Services.ContextModule;
+
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+
+import dagger.android.support.DaggerApplication;
 
 public class TaskFragment extends Fragment {
   private static final String TAG = "TaskFragment";
   private int mColumnCount = 1;
   private View.OnClickListener onItemClickListener;
   private TaskRecyclerViewAdapter viewAdapter;
-  private TaskListViewModel viewModel;
   private View view;
   private Button createTaskButton;
   private EditText taskEditText;
+  private TaskListViewModel viewModel;
+  private String checklistName;
 
   public TaskFragment() {
   }
@@ -37,8 +49,17 @@ public class TaskFragment extends Fragment {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    viewModel =
-      ViewModelProviders.of(getActivity()).get(TaskListViewModel.class);
+    if (getArguments() != null) {
+      checklistName = getArguments().getString("checklistName", "shared");
+    } else {
+      checklistName = "shared";
+    }
+
+    TaskListViewModelComponent component = DaggerTaskListViewModelComponent.builder()
+      .contextModule(new ContextModule(getActivity().getApplication()))
+      .build();
+
+    viewModel = component.getTaskListViewModel();
 
     createListeners();
     observeViewModel(viewModel);
@@ -70,7 +91,7 @@ public class TaskFragment extends Fragment {
     });
 
     createTaskButton.setOnClickListener(v -> {
-      viewModel.createTask(taskEditText.getText().toString());
+      viewModel.createTask(checklistName, taskEditText.getText().toString());
       taskEditText.setText("");
     });
   }
@@ -85,11 +106,13 @@ public class TaskFragment extends Fragment {
   }
 
   private void observeViewModel(final TaskListViewModel viewModel) {
-    // Update the list when the data changes
     viewModel.getTasks().observe(this, tasks -> {
       if (tasks != null) {
-        tasks.sort((o1, o2) -> o1.getStatus() ? 1 : o2.getStatus() ? -1 : 0);
-        viewAdapter.setData(tasks);
+        List<Task> filteredResult = tasks.stream()
+          .sorted((o1, o2) -> o1.getStatus() ? 1 : o2.getStatus() ? -1 : 0)
+          .filter(task -> task.checklistName.equals(checklistName))
+          .collect(Collectors.toList());
+        viewAdapter.setData(filteredResult);
       }
     });
   }
@@ -117,8 +140,6 @@ public class TaskFragment extends Fragment {
 
       @Override
       public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-        // Row is swiped from recycler view
-        // remove it from adapter
         TaskRecyclerViewAdapter.ViewHolder vH = (TaskRecyclerViewAdapter.ViewHolder) viewHolder;
         if (direction == ItemTouchHelper.LEFT) {
           viewModel.deleteTask(vH.task);

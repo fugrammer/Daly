@@ -20,6 +20,7 @@ public class TaskFirestoreDao {
         data.put("id", task.getId());
         data.put("description", task.description);
         data.put("status", task.status);
+      data.put("checklistName", task.checklistName);
         return data;
     }
 }
