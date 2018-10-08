@@ -5,9 +5,11 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -16,11 +18,14 @@ import com.example.thamt.daly.TaskListActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.Map;
+
 public class MyFirebaseMessengingService extends FirebaseMessagingService {
     private static final String TAG = "MyFirebaseMessengingService";
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
+      super.onMessageReceived(remoteMessage);
         // [START_EXCLUDE]
         // There are two types of messages data messages and notification messages. Data messages
         // are handled
@@ -51,8 +56,8 @@ public class MyFirebaseMessengingService extends FirebaseMessagingService {
 
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
-            sendNotification(remoteMessage.getNotification().getBody());
         }
+      sendNotification(remoteMessage.getData());
 
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
@@ -60,14 +65,19 @@ public class MyFirebaseMessengingService extends FirebaseMessagingService {
 
     @Override
     public void onNewToken(String token) {
-        // If you want to send messages to this application instance or
-        // manage this apps subscriptions on the server side, send the
-        // Instance ID token to your app server.
         Log.i(TAG, "onNewToken: " + token);
-//        sendRegistrationToServer(token);
+      // Saves token locally. Updates server when application is started.
+      saveToken(token);
     }
 
-    private void sendNotification(String messageBody) {
+  private void saveToken(String token) {
+    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+    sharedPreferences.edit()
+      .putString(getString(R.string.user_token), token)
+      .apply();
+    }
+
+  private void sendNotification(Map<String, String> data) {
         Intent intent = new Intent(this, TaskListActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
@@ -77,11 +87,12 @@ public class MyFirebaseMessengingService extends FirebaseMessagingService {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
-                        .setContentTitle("MessageTitle")
-                        .setContentText(messageBody)
+                  .setContentTitle("Reminder")
+                  .setContentText("Task: " + data.get("body"))
                         .setSmallIcon(R.drawable.ic_launcher_foreground)
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
+                  .setPriority(NotificationCompat.PRIORITY_MAX)
                         .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =

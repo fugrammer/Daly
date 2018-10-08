@@ -7,4 +7,6 @@
     <string name="TASKS_DB_NAME">Tasks.db</string>
     <string name="CREATE_TASK_HINT">Enter task</string>
     <string name="ADD_TASK_LABEL">Add</string>
+  <string name="user_token">USER_TOKEN</string>
+  <string name="user_id">USER_ID</string>
 </resources>

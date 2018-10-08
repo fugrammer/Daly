@@ -10,8 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.thamt.daly.Chat.dummy.DummyContent;
-import com.example.thamt.daly.Chat.dummy.DummyContent.DummyItem;
 import com.example.thamt.daly.R;
 
 /**
@@ -68,7 +66,7 @@ public class ChatFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new ChatRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+          recyclerView.setAdapter(new ChatRecyclerViewAdapter(null, mListener));
         }
         return view;
     }
@@ -103,6 +101,6 @@ public class ChatFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction();
     }
 }
