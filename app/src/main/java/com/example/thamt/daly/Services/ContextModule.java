@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -19,11 +20,13 @@ public class ContextModule {
 
   @Provides
   @Named("application_context")
+  @Singleton
   public Context context() {
     return application.getApplicationContext();
   }
 
   @Provides
+  @Singleton
   public Application application() {
     return application;
   }

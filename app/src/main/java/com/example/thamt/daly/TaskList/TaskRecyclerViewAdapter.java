@@ -12,6 +12,8 @@ import android.widget.TextView;
 import com.example.thamt.daly.Database.Task;
 import com.example.thamt.daly.R;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +57,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
     public final CheckBox checkBox;
     public final TextView contentView;
     public final View strikeoutView;
+    public final TextView dueDateTextview;
 
     @Nullable
     public Task task;
@@ -65,6 +68,8 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
       checkBox = view.findViewById(R.id.checkBox);
       contentView = view.findViewById(R.id.content);
       strikeoutView = view.findViewById(R.id.divider);
+      dueDateTextview = view.findViewById(R.id.dueDateTextView);
+
       view.setTag(this);
       checkBox.setOnClickListener(v -> onItemClickListener.onClick(view));
       view.setOnClickListener(onItemClickListener);
@@ -76,6 +81,16 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         boolean completed = task.status;
         checkBox.setChecked(completed);
         contentView.setText(task.description);
+        DateTime dt = task.dueDate;
+        if (dt == null) {
+          dueDateTextview.setVisibility(View.GONE);
+        } else {
+          dueDateTextview.setVisibility(View.VISIBLE);
+          dueDateTextview.setText(context.getString(
+            R.string.due_date_task, dt.getDayOfMonth(),
+            dt.getMonthOfYear(),
+            dt.getYear()));
+        }
         if (completed) {
           strikeoutView.setVisibility(View.VISIBLE);
         } else {

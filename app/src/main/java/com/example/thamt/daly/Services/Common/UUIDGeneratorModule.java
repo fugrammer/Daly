@@ -2,7 +2,7 @@ package com.example.thamt.daly.Services.Common;
 
 import android.support.annotation.NonNull;
 
-import com.example.thamt.daly.DalyApplicationScope;
+import com.example.thamt.daly.ActivityScope;
 
 import dagger.Module;
 import dagger.Provides;
@@ -11,7 +11,7 @@ import dagger.Provides;
 public class UUIDGeneratorModule {
     @Provides
     @NonNull
-    @DalyApplicationScope
+    @ActivityScope
     public UUIDGenerator provideUUIDGenerator() {
         return new UUIDGenerator();
     }

@@ -6,6 +6,8 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
+import org.joda.time.DateTime;
+
 @Entity
 public class Task {
   @ColumnInfo(name = "description")
@@ -14,6 +16,21 @@ public class Task {
   public boolean status;
   @ColumnInfo(name = "checklistName")
   public String checklistName;
+  @ColumnInfo(name = "dueDate")
+  public DateTime dueDate;
+
+  @Ignore
+  public Task(String checklistName, String id, String description, boolean status, DateTime dueDate) {
+    this.checklistName = checklistName;
+    this.id = id;
+    this.status = status;
+    this.description = description;
+    this.dueDate = dueDate;
+  }
+
+  public DateTime getDueDate() {
+    return dueDate;
+  }
 
   @PrimaryKey
   @NonNull
@@ -22,12 +39,8 @@ public class Task {
   public Task() {
   }
 
-  @Ignore
-  public Task(String checklistName, String id, String description, boolean status) {
-    this.checklistName = checklistName;
-    this.id = id;
-    this.status = status;
-    this.description = description;
+  public void setDueDate(DateTime dueDate) {
+    this.dueDate = dueDate;
   }
 
   @Ignore

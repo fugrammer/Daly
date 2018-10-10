@@ -1,6 +1,6 @@
 package com.example.thamt.daly.TaskList;
 
-import android.arch.lifecycle.ViewModelProviders;
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,39 +8,30 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 
+import com.example.thamt.daly.Common.MovableFloatingActionButton;
+import com.example.thamt.daly.DalyApplication;
 import com.example.thamt.daly.Database.Task;
 import com.example.thamt.daly.R;
-import com.example.thamt.daly.Services.Common.UUIDGeneratorModule;
-import com.example.thamt.daly.Services.ContextModule;
 
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
+public class TaskFragment extends Fragment implements TaskCreateDialog.OnTaskEnteredListener {
+  private static final String TAG = "TASK_FRAGMENT";
 
-import dagger.android.support.DaggerApplication;
-
-public class TaskFragment extends Fragment {
-  private static final String TAG = "TaskFragment";
   private int mColumnCount = 1;
-  private View.OnClickListener onItemClickListener;
+  private OnClickListener onItemClickListener;
   private TaskRecyclerViewAdapter viewAdapter;
   private View view;
-  private Button createTaskButton;
-  private EditText taskEditText;
-  private TaskListViewModel viewModel;
   private String checklistName;
+  private TaskListViewModel viewModel;
+  private MovableFloatingActionButton fab;
 
   public TaskFragment() {
   }
@@ -48,17 +39,13 @@ public class TaskFragment extends Fragment {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
     if (getArguments() != null) {
       checklistName = getArguments().getString("checklistName", "shared");
     } else {
       checklistName = "shared";
     }
 
-    TaskListViewModelComponent component = DaggerTaskListViewModelComponent.builder()
-      .contextModule(new ContextModule(getActivity().getApplication()))
-      .build();
-
+    TaskListViewModelComponent component = DalyApplication.instance.getTaskListViewModelComponent();
     viewModel = component.getTaskListViewModel();
 
     createListeners();
@@ -66,33 +53,13 @@ public class TaskFragment extends Fragment {
   }
 
   private void initialiseViews() {
-    createTaskButton = view.findViewById(R.id.button);
-    taskEditText = view.findViewById(R.id.editText);
+    fab = view.findViewById(R.id.tasklist_fab);
 
-    taskEditText.addTextChangedListener(new TextWatcher() {
-      @Override
-      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-      }
-
-      @Override
-      public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-      }
-
-      @Override
-      public void afterTextChanged(Editable s) {
-        if (!s.toString().isEmpty()) {
-          createTaskButton.setEnabled(true);
-        } else {
-          createTaskButton.setEnabled(false);
-        }
-      }
-    });
-
-    createTaskButton.setOnClickListener(v -> {
-      viewModel.createTask(checklistName, taskEditText.getText().toString());
-      taskEditText.setText("");
+    fab.setOnClickListener(view -> {
+      // Create custom dialog object
+      final Dialog dialog = new TaskCreateDialog(getActivity(), this).setOnTaskEnteredListener(this);
+      dialog.show();
+      getFragmentManager();
     });
   }
 
@@ -165,5 +132,11 @@ public class TaskFragment extends Fragment {
   @Override
   public void onDetach() {
     super.onDetach();
+  }
+
+  @Override
+  public void onTaskEntered(Task task) {
+    task.checklistName = checklistName;
+    viewModel.createTask(task);
   }
 }

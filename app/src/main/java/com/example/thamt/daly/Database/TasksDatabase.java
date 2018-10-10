@@ -3,11 +3,13 @@ package com.example.thamt.daly.Database;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
+import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
 
 import com.example.thamt.daly.R;
 
-@Database(entities = {Task.class}, version = 3)
+@Database(entities = {Task.class}, version = 4)
+@TypeConverters({DateTimeTypeConverter.class})
 public abstract class TasksDatabase extends RoomDatabase {
     private static final Object sLock = new Object();
 

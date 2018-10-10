@@ -11,11 +11,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.thamt.daly.Services.MessengingServiceFirestoreDao;
 import com.example.thamt.daly.TaskList.TaskFragment;
+import com.example.thamt.daly.TaskList.TaskListViewModelComponent;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
@@ -70,6 +72,9 @@ public class TaskListActivity extends AppCompatActivity {
     firestore.setFirestoreSettings(settings);
 
     auth = FirebaseAuth.getInstance();
+
+    TaskListViewModelComponent component = DalyApplication.instance.getTaskListViewModelComponent();
+    Log.i("SCOPING", "onCreate: " + component.getTaskListViewModel().toString());
 
     Bundle bundle = new Bundle();
     bundle.putString("checklistName", "shared");
@@ -172,7 +177,12 @@ public class TaskListActivity extends AppCompatActivity {
 
       default:
         return super.onOptionsItemSelected(item);
-
     }
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    DalyApplication.instance.clearTaskListViewModelComponent();
   }
 }
