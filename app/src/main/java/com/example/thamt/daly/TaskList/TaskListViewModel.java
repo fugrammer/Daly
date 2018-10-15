@@ -35,14 +35,12 @@ public class TaskListViewModel extends AndroidViewModel {
   private FirebaseFirestore db = FirebaseFirestore.getInstance();
   private UUIDGenerator uuidGenerator;
   private TaskPingUsersService pingUsersService;
-//  private Context context;
 
   public TaskListViewModel(
     Application application,
     UUIDGenerator uuidGenerator,
     TaskPingUsersService pingUsersService) {
     super(application);
-//    context = application;
     taskDao = TasksDatabase.getInstance(application).taskDao();
     executorService = Executors.newSingleThreadExecutor();
     this.uuidGenerator = uuidGenerator;

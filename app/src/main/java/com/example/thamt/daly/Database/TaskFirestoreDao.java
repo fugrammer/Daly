@@ -10,23 +10,24 @@ import java.util.Map;
 
 public class TaskFirestoreDao {
 
-    static public void setTask(Task task) {
-        FirebaseFirestore.getInstance().collection("tasks").document(String.valueOf(task.getId())).set(createMap(task));
-    }
+  static public void setTask(Task task) {
+    FirebaseFirestore.getInstance().collection("tasks").document(String.valueOf(task.getId())).set(createMap(task));
+  }
 
-    static public void deleteTask(Task task) {
-        FirebaseFirestore.getInstance().collection("tasks").document(String.valueOf(task.getId())).delete();
-    }
+  static public void deleteTask(Task task) {
+    FirebaseFirestore.getInstance().collection("tasks").document(String.valueOf(task.getId())).delete();
+  }
 
-    static private Map<String, Object> createMap(Task task) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("id", task.getId());
-        data.put("description", task.description);
-        data.put("status", task.status);
-      data.put("checklistName", task.checklistName);
-      data.put("dueDate", task.dueDate != null ? task.dueDate.getMillis() : null);
-        return data;
-    }
+  static private Map<String, Object> createMap(Task task) {
+    Map<String, Object> data = new HashMap<>();
+    data.put("id", task.getId());
+    data.put("description", task.description);
+    data.put("status", task.status);
+    data.put("checklistName", task.checklistName);
+    data.put("dueDate", task.dueDate != null ? task.dueDate.getMillis() : null);
+    data.put("order", task.order);
+    return data;
+  }
 
   static public Task getTask(QueryDocumentSnapshot doc) {
     String checklistName = doc.getString("checklistName");
@@ -34,7 +35,14 @@ public class TaskFirestoreDao {
     String id = doc.getString("id");
     boolean status = doc.getBoolean("status");
     Long millis = doc.getLong("dueDate");
+    Long order = doc.getLong("order");
     DateTime dueDate = millis == null ? null : new DateTime().withMillis(millis);
-    return new Task(checklistName, id, description, status, dueDate);
+    return new Task.Builder(id)
+      .addCheckListName(checklistName)
+      .setOrder(order)
+      .setDescription(description)
+      .setStatus(status)
+      .setDueDate(dueDate)
+      .build();
   }
 }

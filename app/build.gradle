@@ -36,22 +36,23 @@ dependencies {
   implementation "android.arch.persistence.room:runtime:$room_version"
   implementation 'com.google.firebase:firebase-core:16.0.4'
   implementation 'com.google.firebase:firebase-firestore:17.1.1'
-  testImplementation 'junit:junit:4.12'
-  androidTestImplementation 'com.android.support.test:runner:1.0.2'
-  androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-  annotationProcessor "android.arch.persistence.room:compiler:$room_version"
-  // use kapt for Kotlin
-  annotationProcessor "android.arch.lifecycle:compiler:$lifecycle_version"
   implementation 'com.google.firebase:firebase-messaging:17.3.3'
   implementation 'com.google.dagger:dagger-android:2.17'
   implementation 'com.google.dagger:dagger-android-support:2.17'
-  // if you use the support libraries
-  annotationProcessor 'com.google.dagger:dagger-android-processor:2.17'
-  annotationProcessor 'com.google.dagger:dagger-compiler:2.17'
   implementation 'com.google.firebase:firebase-auth:16.0.4'
   implementation 'com.firebaseui:firebase-ui-auth:4.1.0'
   implementation 'com.google.firebase:firebase-functions:16.1.1'
   implementation 'one.xcorp.widget:swipe-picker:1.1.0'
   implementation 'com.code-troopers.betterpickers:library:3.1.0'
   implementation 'net.danlew:android.joda:2.9.9.4'
+  implementation 'com.evernote:android-job:1.2.6'
+  androidTestImplementation 'com.android.support.test:runner:1.0.2'
+  androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+  annotationProcessor "android.arch.persistence.room:compiler:$room_version"
+  annotationProcessor "android.arch.lifecycle:compiler:$lifecycle_version"
+  // use kapt for Kotlin
+  // if you use the support libraries
+  annotationProcessor 'com.google.dagger:dagger-android-processor:2.17'
+  annotationProcessor 'com.google.dagger:dagger-compiler:2.17'
+  testImplementation 'junit:junit:4.12'
 }

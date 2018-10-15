@@ -2,9 +2,11 @@ package com.example.thamt.daly;
 
 import android.app.Application;
 
+import com.evernote.android.job.JobManager;
 import com.example.thamt.daly.Services.ContextModule;
 import com.example.thamt.daly.TaskList.DaggerTaskListViewModelComponent;
 import com.example.thamt.daly.TaskList.TaskListViewModelComponent;
+import com.example.thamt.daly.TaskList.TaskReminderJobCreator;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
@@ -19,6 +21,7 @@ public class DalyApplication extends Application {
       JodaTimeAndroid.init(this);
       instance = this;
       appComponent = buildComponent();
+      JobManager.create(this).addJobCreator(new TaskReminderJobCreator());
     }
 
   protected AppComponent buildComponent() {

@@ -40,22 +40,22 @@ public class TaskCreateDialog extends Dialog implements CalendarDatePickerDialog
     createDialog(fragment, new Task());
   }
 
-  @Override
-  public void onDateSet(CalendarDatePickerDialogFragment dialog, int year, int month, int day) {
-    dueDateTextView.setText(context.getString(R.string.date_picker_result_values, day, month, year));
-    DateTime dt = new DateTime().withYear(year).withDayOfMonth(day).withMonthOfYear(month);
-    task.setDueDate(dt);
-  }
-
-  public TaskCreateDialog setOnTaskEnteredListener(OnTaskEnteredListener listener) {
-    this.listener = listener;
-    return this;
-  }
-
   private void createDialog(Fragment fragment, Task task) {
     this.task = task;
     dueDateTextView = findViewById(R.id.dueDateBtn);
+    if (task.dueDate != null) {
+      DateTime dt = task.dueDate;
+      dueDateTextView.setText(context.getString(
+        R.string.date_picker_result_values, dt.getDayOfMonth(),
+        dt.getMonthOfYear(),
+        dt.getYear()));
+    }
+
     taskDescriptionEditText = findViewById(R.id.taskDescriptionEditText);
+    if (task.description != null) {
+      taskDescriptionEditText.setText(task.description);
+    }
+
     Button createTaskBtn = findViewById(R.id.task_create_btn);
     createTaskBtn.setOnClickListener(v -> {
       dismiss();
@@ -77,6 +77,19 @@ public class TaskCreateDialog extends Dialog implements CalendarDatePickerDialog
         .setThemeDark();
       cdp.show(fragment.getFragmentManager(), FRAG_TAG_DATE_PICKER);
     });
+  }
+
+  @Override
+  public void onDateSet(CalendarDatePickerDialogFragment dialog, int year, int month, int day) {
+    month += 1;
+    dueDateTextView.setText(context.getString(R.string.date_picker_result_values, day, month, year));
+    DateTime dt = new DateTime().withYear(year).withDayOfMonth(day).withMonthOfYear(month);
+    task.setDueDate(dt);
+  }
+
+  public TaskCreateDialog setOnTaskEnteredListener(OnTaskEnteredListener listener) {
+    this.listener = listener;
+    return this;
   }
 
   public interface OnTaskEnteredListener {

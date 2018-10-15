@@ -8,7 +8,7 @@ import android.content.Context;
 
 import com.example.thamt.daly.R;
 
-@Database(entities = {Task.class}, version = 4)
+@Database(entities = {Task.class}, version = 5)
 @TypeConverters({DateTimeTypeConverter.class})
 public abstract class TasksDatabase extends RoomDatabase {
     private static final Object sLock = new Object();
