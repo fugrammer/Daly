@@ -1,14 +1,26 @@
 package com.example.thamt.daly.Database;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.WriteBatch;
 
 import org.joda.time.DateTime;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TaskFirestoreDao {
+
+  static public void setAllTasks(List<Task> tasks) {
+    WriteBatch batch = FirebaseFirestore.getInstance().batch();
+    for (Task task : tasks) {
+      DocumentReference taskRef = FirebaseFirestore.getInstance().collection("tasks").document(String.valueOf(task.getId()));
+      batch.set(taskRef, createMap(task));
+    }
+    batch.commit();
+  }
 
   static public void setTask(Task task) {
     FirebaseFirestore.getInstance().collection("tasks").document(String.valueOf(task.getId())).set(createMap(task));

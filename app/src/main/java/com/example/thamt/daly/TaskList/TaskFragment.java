@@ -21,6 +21,7 @@ import com.example.thamt.daly.Database.Task;
 import com.example.thamt.daly.Database.TaskFirestoreDao;
 import com.example.thamt.daly.R;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -88,7 +89,7 @@ public class TaskFragment extends Fragment implements TaskCreateDialog.OnTaskEnt
   private void observeViewModel(final TaskListViewModel viewModel) {
     viewModel.getTasks().observe(this, tasks -> {
       if (tasks != null) {
-        filteredResult = tasks.stream()
+        List<Task> newfilteredResult = tasks.stream()
           .sorted((o1, o2) -> {
             if (o1.status && o2.status || !o1.status && !o2.status) {
               return Long.compare(-o1.order, -o2.order);
@@ -97,10 +98,41 @@ public class TaskFragment extends Fragment implements TaskCreateDialog.OnTaskEnt
           })
           .filter(task -> task.checklistName.equals(checklistName))
           .collect(Collectors.toList());
-        viewAdapter.setData(filteredResult);
+        mergeFilteredResults(newfilteredResult);
+//        viewAdapter.setData(filteredResult);
       }
     });
   }
+
+  private void mergeFilteredResults(List<Task> newFilteredResult) {
+    int size = newFilteredResult.size();
+    for (int idx = 0; idx < size; idx++) {
+      if (filteredResult == null || idx > filteredResult.size() - 1) {
+        if (filteredResult == null) {
+          filteredResult = new ArrayList<>();
+        }
+        filteredResult.add(newFilteredResult.get(idx));
+        viewAdapter.setData(filteredResult);
+        viewAdapter.notifyItemInserted(idx);
+      } else {
+        if (!checkIfSimilarVisualValues(filteredResult.get(idx), newFilteredResult.get(idx))) {
+          filteredResult.remove(idx);
+          filteredResult.add(idx, newFilteredResult.get(idx));
+          viewAdapter.setData(filteredResult);
+          viewAdapter.notifyItemChanged(idx);
+        }
+      }
+    }
+
+  }
+
+  private boolean checkIfSimilarVisualValues(Task oldTask, Task newTask) {
+    return oldTask.getId() == newTask.getId()
+      && oldTask.getDescription() == newTask.getDescription()
+      && oldTask.getDueDate() == newTask.getDueDate()
+      && oldTask.getChecklistName() == newTask.getChecklistName();
+  }
+
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -144,10 +176,7 @@ public class TaskFragment extends Fragment implements TaskCreateDialog.OnTaskEnt
         public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
           super.clearView(recyclerView, viewHolder);
           // Action finished
-          // Update tasks orders on FireBase after user has stop moving task.
-          for (Task task : filteredResult) {
-            TaskFirestoreDao.setTask(task);
-          }
+          TaskFirestoreDao.setAllTasks(filteredResult);
         }
 
         private void swapTasksOrders(Task a, Task b) {

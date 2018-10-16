@@ -11,5 +11,6 @@
   <string name="user_id">USER_ID</string>
   <string name="date_picker_result_values">%1$d/%2$d/%3$d</string>
   <string name="due_date_task">Due date: %1$d/%2$d/%3$d (%4$d days left)</string>
+  <string name="late_due_date_task">Due date: %1$d/%2$d/%3$d (Late)</string>
   <string name="SET_DUE_DATE_TEXT">Set</string>
 </resources>

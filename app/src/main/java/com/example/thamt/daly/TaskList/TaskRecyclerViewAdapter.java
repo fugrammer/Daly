@@ -59,7 +59,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
 
   public void setData(List<Task> newData) {
     this.tasks = newData;
-    notifyDataSetChanged();
+//    notifyDataSetChanged();
   }
 
   @Override
@@ -115,11 +115,20 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
           dueDateTextview.setVisibility(View.GONE);
         } else {
           dueDateTextview.setVisibility(View.VISIBLE);
-          dueDateTextview.setText(context.getString(
-            R.string.due_date_task, dt.getDayOfMonth(),
-            dt.getMonthOfYear(),
-            dt.getYear(),
-            Days.daysBetween(today, dt).getDays()));
+          int daysBetween = Days.daysBetween(today, dt).getDays();
+          if (daysBetween >= 0) {
+            dueDateTextview.setText(
+              context.getString(
+                R.string.due_date_task, dt.getDayOfMonth(),
+                dt.getMonthOfYear(),
+                dt.getYear(), daysBetween));
+          } else {
+            dueDateTextview.setText(
+              context.getString(
+                R.string.late_due_date_task, dt.getDayOfMonth(),
+                dt.getMonthOfYear(),
+                dt.getYear()));
+          }
         }
         if (completed) {
           strikeoutView.setVisibility(View.VISIBLE);

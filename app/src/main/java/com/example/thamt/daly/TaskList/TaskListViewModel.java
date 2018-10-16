@@ -15,10 +15,10 @@ import com.example.thamt.daly.Database.TasksDatabase;
 import com.example.thamt.daly.Services.Common.UUIDGenerator;
 import com.example.thamt.daly.Services.TaskListServices.TaskPingUsersService;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.functions.FirebaseFunctionsException;
 
@@ -54,14 +54,27 @@ public class TaskListViewModel extends AndroidViewModel {
           if (e != null) {
             return;
           }
-          taskDao.deleteAll();
-          for (QueryDocumentSnapshot doc : value) {
-            try {
-              taskDao.save(TaskFirestoreDao.getTask(doc));
-            } catch (Exception exception) {
-              Log.e(TAG, "onEvent: ", exception);
+
+          for (DocumentChange dc : value.getDocumentChanges()) {
+            switch (dc.getType()) {
+              case ADDED:
+              case MODIFIED:
+                taskDao.save(TaskFirestoreDao.getTask(dc.getDocument()));
+                break;
+              case REMOVED:
+                taskDao.delete(TaskFirestoreDao.getTask(dc.getDocument()));
+                break;
             }
           }
+
+//          taskDao.deleteAll();
+//          for (QueryDocumentSnapshot doc : value) {
+//            try {
+//              taskDao.save(TaskFirestoreDao.getTask(doc));
+//            } catch (Exception exception) {
+//              Log.e(TAG, "onEvent: ", exception);
+//            }
+//          }
         }
       });
   }
@@ -91,14 +104,10 @@ public class TaskListViewModel extends AndroidViewModel {
             FirebaseFunctionsException.Code code = ffe.getCode();
             Object details = ffe.getDetails();
           }
-
-          // [START_EXCLUDE]
           Log.w(TAG, "addMessage:onFailure", e);
 //          Toast.makeText(context, "Failed to ping users", Toast.LENGTH_SHORT).show();
           return;
-          // [END_EXCLUDE]
         }
-
         // [START_EXCLUDE]
         String result = task.getResult();
 //        Toast.makeText(context, "Pinged users.", Toast.LENGTH_SHORT).show();
